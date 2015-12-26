@@ -15,9 +15,6 @@ LOCAL_SRC_FILES := \
 
 LOCAL_SRC_FILES_arm += armv6_idct.S
 
-# jsimd_arm_neon.S does not compile with clang.
-LOCAL_CLANG_ASFLAGS_arm += -no-integrated-as
-
 ifneq (,$(TARGET_BUILD_APPS))
 # unbundled branch, built against NDK.
 LOCAL_SDK_VERSION := 17
@@ -34,6 +31,10 @@ ifeq ($(TARGET_ARCH),x86)
   LOCAL_CFLAGS += -DANDROID_INTELSSE2_IDCT
   LOCAL_SRC_FILES += jidctintelsse.c
 endif
+
+LOCAL_SRC_FILES_arm64 += \
+        jsimd_arm64_neon.S \
+        jsimd_neon.c
 
 ifneq (, $(filter arm, $(strip $(TARGET_ARCH)) $(strip $(TARGET_2ND_ARCH))))
   ifeq ($(ARCH_ARM_HAVE_NEON),true)
@@ -60,6 +61,8 @@ endif
 
 LOCAL_MODULE := libjpeg_static
 
+LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
+
 include $(BUILD_STATIC_LIBRARY)
 
 
@@ -80,6 +83,8 @@ else
 # unbundled branch, built against NDK.
 LOCAL_SDK_VERSION := 17
 endif
+
+LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
 
 include $(BUILD_SHARED_LIBRARY)
 
